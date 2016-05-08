@@ -12,13 +12,11 @@ typedef struct {
 
 #define RUN_TEST(T) \
     test _test_##T = T(); \
-    char* _status_text_for_##T = "\033[32mPASS "; \
-    \
-    if (_test_##T.result != 0) { \
-        _status_text_for_##T = "\033[31mFAIL!"; \
-    } \
-    \
-    printf("%s\033[m (%s) %s\n", _status_text_for_##T, #T, _test_##T.text);
+    if (_test_##T.result == 0) { \
+        printf("\033[32mPASS\033[m (%s) \n", #T); \
+    } else { \
+        printf("\033[31mFAIL\033[m (%s) %s\n", #T, _test_##T.text); \
+    }
 
 #define DO_TEST(A,S) \
     if (!(A)) { \
