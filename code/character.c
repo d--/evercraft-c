@@ -28,9 +28,15 @@ typedef struct {
     int damage;
 } attack;
 
-void new_character(character *c) {
+void new_character(character *c, char *name) {
     c->ac = 10;
     c->hp = 5;
+    c->name = name;
+    c->life = LIVING;
+}
+
+void align_character(character *c, alignment_status alignment) {
+    c->alignment = alignment;
 }
 
 void attack_roll(attack *a, int roll, character c) {
@@ -57,3 +63,11 @@ void apply_attack(character *c, attack a) {
         c->life = DEAD;
     }
 } 
+
+int calculate_ability_modifier(int score) {
+    if (score < 11) {
+        return -1 * (11 - score) / 2;
+    } else {
+        return (score - 10) / 2;
+    }
+}
