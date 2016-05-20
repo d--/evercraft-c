@@ -3,29 +3,23 @@
 #include "character.c"
 
 test ability_score_test() {
-    DEF_TEST("given a character, that character has ability scores that are "
-            "able to be modified, range from 1 to 20, default to 10, and have "
-            "their modifiers set according to ability_modifier_test");
+    DEF_TEST("given a new character, ability scores default to 10");
 
     character bob;
     new_character(&bob, "bilbob");
      
-    DO_TEST(bob.stats.strength.score == 10,
+    DO_TEST(bob.stats.strength == 10,
             "new character has 10 strength");
-    DO_TEST(bob.stats.dexterity.score == 10,
+    DO_TEST(bob.stats.dexterity == 10,
             "new character has 10 dexterity");
-    DO_TEST(bob.stats.constitution.score == 10,
+    DO_TEST(bob.stats.constitution == 10,
             "new character has 10 constitution");
-    DO_TEST(bob.stats.wisdom.score == 10,
+    DO_TEST(bob.stats.wisdom == 10,
             "new character has 10 wisdom");
-    DO_TEST(bob.stats.intelligence.score == 10,
+    DO_TEST(bob.stats.intelligence == 10,
             "new character has 10 intelligence");
-    DO_TEST(bob.stats.charisma.score == 10,
+    DO_TEST(bob.stats.charisma == 10,
             "new character has 10 charisma");
-
-    modify_ability(&bob.stats.strength, 20); 
-    DO_TEST(bob.stats.strength.score == 20, "bilbob's new strength is 20");
-    DO_TEST(bob.stats.strength.modifier == 5, "strength modifier is 5");
 
     END_TEST;
 }

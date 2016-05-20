@@ -1,17 +1,23 @@
-typedef struct {
-    int score;
-    int modifier;
-} ability;
+/* idea:
+ *
+ * the different classes, weapons, and races "have" character pointers
+ *
+ * iterate through each in a combat, "augment" a temporary character each time
+ * until the "resolve" step between attacker and defender
+ *
+ * this includes the character stat augmentation of strength for attack,
+ * dexterity for ac, and constitution for hit points
+ */
 
 typedef struct {
     int armor_class;
     int hit_points;
-    ability strength;
-    ability dexterity;
-    ability constitution;
-    ability wisdom;
-    ability intelligence;
-    ability charisma;
+    int strength;
+    int dexterity;
+    int constitution;
+    int wisdom;
+    int intelligence;
+    int charisma;
 } character_statistics;
 
 typedef enum {
@@ -51,22 +57,17 @@ int calculate_ability_modifier(int score) {
     }
 }
 
-void modify_ability(ability *a, int score) {
-    a->score = score;
-    a->modifier = calculate_ability_modifier(score);
-}
-
 void new_character(character *c, char const *name) {
-    c->stats.armor_class = 10;
-    c->stats.hit_points = 5;
     c->name = name;
     c->life = LIVING;
-    modify_ability(&c->stats.strength, 10);
-    modify_ability(&c->stats.dexterity, 10);
-    modify_ability(&c->stats.constitution, 10);
-    modify_ability(&c->stats.wisdom, 10);
-    modify_ability(&c->stats.intelligence, 10);
-    modify_ability(&c->stats.charisma, 10);
+    c->stats.armor_class = 10;
+    c->stats.hit_points = 5;
+    c->stats.strength = 10;
+    c->stats.dexterity = 10;
+    c->stats.constitution = 10;
+    c->stats.wisdom = 10;
+    c->stats.intelligence = 10;
+    c->stats.charisma = 10;
 }
 
 void align_character(character *c, alignment_status alignment) {
