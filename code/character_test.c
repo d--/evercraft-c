@@ -2,6 +2,26 @@
 #include "testing.h"
 #include "character.c"
 
+// test class_test() {
+//     DEF_TEST("a character can have a class which can augment their abilities.");
+//
+//     character vlog_the_fumbler;
+//     new_character(&vlog_the_fumbler, "Vlog the Fumbler");
+//     augment_character(&vlog_the_fumbler, &npc);
+//     DO_TEST(vlog_the_fumbler.stats.hit_points == 1, "NPCs have 1 Hit Point." )
+// }
+
+test npc_augmentation_test() {
+    DEF_TEST("Verify that the NPC character augmentation reduces HP to 1");
+
+    character ted_the_janitor;
+    new_character(&ted_the_janitor, "Ted the Janitor");
+    augment_npc(&ted_the_janitor);
+    DO_TEST(ted_the_janitor.stats.hit_points == 1, "Ted's HP should be 1");
+
+    END_TEST;
+}
+
 test xp_level_test() {
     DEF_TEST("a new character has 0 xp and level is (1 + floor(xp / 1000))");
 
@@ -10,7 +30,7 @@ test xp_level_test() {
 
     DO_TEST(bob.xp == 0, "new character has 0 xp");
     DO_TEST(calculate_level(bob.xp) == 1, "at 0 xp, character level 1");
-    
+
     bob.xp = 41999;
     DO_TEST(calculate_level(bob.xp) == 42, "at 41999 xp, character level 42");
 
@@ -25,7 +45,7 @@ test ability_score_test() {
 
     character bob;
     new_character(&bob, "bilbob");
-     
+
     DO_TEST(bob.stats.strength == 10,
             "new character has 10 strength");
     DO_TEST(bob.stats.dexterity == 10,
@@ -149,7 +169,7 @@ test new_character_ac_hp_test() {
 
 test alignment_test() {
     DEF_TEST("given a character, I can get and set the alignment");
-    
+
     character hero;
     align_character(&hero, GOOD);
 
@@ -173,6 +193,7 @@ test name_test() {
 int main() {
     RUN_TEST(name_test);
     RUN_TEST(alignment_test);
+    RUN_TEST(npc_augmentation_test);
     RUN_TEST(new_character_ac_hp_test);
     RUN_TEST(attack_test);
     RUN_TEST(damage_test);

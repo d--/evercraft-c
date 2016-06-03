@@ -19,7 +19,7 @@
  *
  * so i'll need to create a character copy that can be destroyed after being
  * used
- * 
+ *
  */
 
 typedef struct {
@@ -41,7 +41,7 @@ typedef enum {
 
 typedef enum {
     LIVING,
-    DEAD 
+    DEAD
 } life_status;
 
 typedef enum {
@@ -93,6 +93,15 @@ void align_character(character *c, alignment_status alignment) {
     c->alignment = alignment;
 }
 
+// void augment_character(character *c, augmentation augie) {
+//     c->
+// }
+
+void augment_npc(character *c) {
+  c->stats.hit_points = 1;
+}
+
+
 void attack_roll(attack *a, int roll, character const *character) {
     if (roll == 20) {
         a->status = CRITICAL;
@@ -116,5 +125,4 @@ void apply_attack(character *c, attack const *attack) {
     if (c->stats.hit_points == 0) {
         c->life = DEAD;
     }
-} 
-
+}
