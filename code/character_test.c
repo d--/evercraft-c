@@ -2,6 +2,24 @@
 #include "testing.h"
 #include "character.c"
 
+test xp_level_test() {
+    DEF_TEST("a new character has 0 xp and level is (1 + floor(xp / 1000))");
+
+    character bob;
+    new_character(&bob, "bobby hill");
+
+    DO_TEST(bob.xp == 0, "new character has 0 xp");
+    DO_TEST(calculate_level(bob.xp) == 1, "at 0 xp, character level 1");
+    
+    bob.xp = 41999;
+    DO_TEST(calculate_level(bob.xp) == 42, "at 41999 xp, character level 42");
+
+    bob.xp = 42000;
+    DO_TEST(calculate_level(bob.xp) == 43, "at 42000 xp, character level 43");
+
+    END_TEST;
+}
+
 test ability_score_test() {
     DEF_TEST("given a new character, ability scores default to 10");
 
@@ -160,4 +178,5 @@ int main() {
     RUN_TEST(damage_test);
     RUN_TEST(ability_modifier_test);
     RUN_TEST(ability_score_test);
+    RUN_TEST(xp_level_test);
 }

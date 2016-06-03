@@ -7,6 +7,19 @@
  *
  * this includes the character stat augmentation of strength for attack,
  * dexterity for ac, and constitution for hit points
+ *
+ * OR:
+ *
+ * have augmentation be function pointers
+ * then have the character have an array of augmentations that must be
+ * malloc'ed, since each augmentation only needs one copy and the pointers can
+ * point to static memory
+ *
+ * all augmentations take a character pointer and modify that chracter
+ *
+ * so i'll need to create a character copy that can be destroyed after being
+ * used
+ * 
  */
 
 typedef struct {
@@ -42,12 +55,17 @@ typedef struct {
     alignment_status alignment;
     life_status life;
     character_statistics stats;
+    int xp;
 } character;
 
 typedef struct {
     attack_status status;
     int damage;
 } attack;
+
+int calculate_level(int xp) {
+    return 1 + (xp / 1000);
+}
 
 int calculate_ability_modifier(int score) {
     if (score < 11) {
@@ -60,6 +78,7 @@ int calculate_ability_modifier(int score) {
 void new_character(character *c, char const *name) {
     c->name = name;
     c->life = LIVING;
+    c->xp = 0;
     c->stats.armor_class = 10;
     c->stats.hit_points = 5;
     c->stats.strength = 10;
