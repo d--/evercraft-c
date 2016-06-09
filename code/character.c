@@ -51,6 +51,10 @@ int calculate_ability_modifier(int score) {
     }
 }
 
+int calculate_roll_bonus(int level) {
+    return level / 2;
+}
+
 void new_character(character *c, char const *name) {
     c->name = name;
     c->life = LIVING;
@@ -65,16 +69,16 @@ void new_character(character *c, char const *name) {
     c->stats.charisma = 10;
 }
 
-void align_character(character *c, alignment_status alignment) {
-    c->alignment = alignment;
-}
-
-void attack_roll(attack *a, int roll, character const *character) {
-    if (roll == 20) {
-        a->status = CRITICAL;
-    } else if (roll >= character->stats.armor_class) {
-        a->status = HIT;
-    } else {
+void attack_roll(attack *a, int roll, int bonus, int armor_class) {
+    if (roll + bonus >= armor_class) {
+        if (roll == 20) {
+            a->status = CRITICAL;
+        }
+        else {
+            a->status = HIT;
+        }
+    }
+    else {
         a->status = MISS;
     }
 }

@@ -2,20 +2,66 @@
 #include "testing.h"
 #include "character.c"
 
+test roll_bonus_application_test() {
+    DEF_TEST("a character's roll bonus is applied to their attack roll");
+
+    attack assault;
+    int bonus;
+
+    bonus = 1;
+    attack_roll(&assault, 20, bonus, 10);
+    DO_TEST(assault.status == CRITICAL, "bonus doesn't matter on CRITICAL");
+
+    bonus = 5;
+    attack_roll(&assault, 15, bonus, 10); // total_roll == 20
+    DO_TEST(assault.status == HIT, "bonus doesn't create a CRITICAL");
+
+    bonus = 10;
+    attack_roll(&assault, 1, bonus, 10);
+    DO_TEST(assault.status == HIT, "bonus adds to roll to beat armor class");
+
+    bonus = 5;
+    attack_roll(&assault, 1, bonus, 10);
+    DO_TEST(assault.status == MISS, "insufficient bonus still creates a MISS");
+
+    END_TEST;
+}
+
+test level_roll_bonus_test() {
+    DEF_TEST("a character's attack roll bonus increases by 1 for each EVEN "
+            "numbered level achieved");
+
+    int level;
+
+    level = 1;
+    DO_TEST(calculate_roll_bonus(level) == 0, "no roll bonus at level 1");
+
+    level = 3;
+    DO_TEST(calculate_roll_bonus(level) == 1, "roll bonus for level 2");
+
+    level = 5;
+    DO_TEST(calculate_roll_bonus(level) == 2, "roll bonus for level 2 and 4");
+
+    END_TEST;
+}
+
 test xp_level_test() {
     DEF_TEST("a new character has 0 xp and level is (1 + floor(xp / 1000))");
 
+    int xp;
+
     character bob;
     new_character(&bob, "bobby hill");
-
     DO_TEST(bob.xp == 0, "new character has 0 xp");
-    DO_TEST(calculate_level(bob.xp) == 1, "at 0 xp, character level 1");
-    
-    bob.xp = 41999;
-    DO_TEST(calculate_level(bob.xp) == 42, "at 41999 xp, character level 42");
 
-    bob.xp = 42000;
-    DO_TEST(calculate_level(bob.xp) == 43, "at 42000 xp, character level 43");
+    xp = 0;
+    DO_TEST(calculate_level(xp) == 1, "at 0 xp, level is 1");
+    
+    xp = 41999;
+    DO_TEST(calculate_level(xp) == 42, "at 41999 xp, level is 42");
+
+    xp = 42000;
+    DO_TEST(calculate_level(xp) == 43, "at 42000 xp, level is 43");
 
     END_TEST;
 }
@@ -26,18 +72,12 @@ test ability_score_test() {
     character bob;
     new_character(&bob, "bilbob");
      
-    DO_TEST(bob.stats.strength == 10,
-            "new character has 10 strength");
-    DO_TEST(bob.stats.dexterity == 10,
-            "new character has 10 dexterity");
-    DO_TEST(bob.stats.constitution == 10,
-            "new character has 10 constitution");
-    DO_TEST(bob.stats.wisdom == 10,
-            "new character has 10 wisdom");
-    DO_TEST(bob.stats.intelligence == 10,
-            "new character has 10 intelligence");
-    DO_TEST(bob.stats.charisma == 10,
-            "new character has 10 charisma");
+    DO_TEST(bob.stats.strength == 10, "new character has 10 strength");
+    DO_TEST(bob.stats.dexterity == 10, "new character has 10 dexterity");
+    DO_TEST(bob.stats.constitution == 10, "new character has 10 constitution");
+    DO_TEST(bob.stats.wisdom == 10, "new character has 10 wisdom");
+    DO_TEST(bob.stats.intelligence == 10, "new character has 10 intelligence");
+    DO_TEST(bob.stats.charisma == 10, "new character has 10 charisma");
 
     END_TEST;
 }
@@ -46,29 +86,26 @@ test ability_modifier_test() {
     DEF_TEST("given an ability score, calculate the associated modifier "
             "according to the data in these tests");
 
-    int (*m)(int);
-    m = &calculate_ability_modifier;
-
-    DO_TEST(m(1)  == -5, "1");
-    DO_TEST(m(2)  == -4, "2");
-    DO_TEST(m(3)  == -4, "3");
-    DO_TEST(m(4)  == -3, "4");
-    DO_TEST(m(5)  == -3, "5");
-    DO_TEST(m(6)  == -2, "6");
-    DO_TEST(m(7)  == -2, "7");
-    DO_TEST(m(8)  == -1, "8");
-    DO_TEST(m(9)  == -1, "9");
-    DO_TEST(m(10) ==  0, "10");
-    DO_TEST(m(11) ==  0, "11");
-    DO_TEST(m(12) ==  1, "12");
-    DO_TEST(m(13) ==  1, "13");
-    DO_TEST(m(14) ==  2, "14");
-    DO_TEST(m(15) ==  2, "15");
-    DO_TEST(m(16) ==  3, "16");
-    DO_TEST(m(17) ==  3, "17");
-    DO_TEST(m(18) ==  4, "18");
-    DO_TEST(m(19) ==  4, "19");
-    DO_TEST(m(20) ==  5, "20");
+    DO_TEST(calculate_ability_modifier(1)  == -5, "ability modifier for 1");
+    DO_TEST(calculate_ability_modifier(2)  == -4, "ability modifier for 2");
+    DO_TEST(calculate_ability_modifier(3)  == -4, "ability modifier for 3");
+    DO_TEST(calculate_ability_modifier(4)  == -3, "ability modifier for 4");
+    DO_TEST(calculate_ability_modifier(5)  == -3, "ability modifier for 5");
+    DO_TEST(calculate_ability_modifier(6)  == -2, "ability modifier for 6");
+    DO_TEST(calculate_ability_modifier(7)  == -2, "ability modifier for 7");
+    DO_TEST(calculate_ability_modifier(8)  == -1, "ability modifier for 8");
+    DO_TEST(calculate_ability_modifier(9)  == -1, "ability modifier for 9");
+    DO_TEST(calculate_ability_modifier(10) ==  0, "ability modifier for 10");
+    DO_TEST(calculate_ability_modifier(11) ==  0, "ability modifier for 11");
+    DO_TEST(calculate_ability_modifier(12) ==  1, "ability modifier for 12");
+    DO_TEST(calculate_ability_modifier(13) ==  1, "ability modifier for 13");
+    DO_TEST(calculate_ability_modifier(14) ==  2, "ability modifier for 14");
+    DO_TEST(calculate_ability_modifier(15) ==  2, "ability modifier for 15");
+    DO_TEST(calculate_ability_modifier(16) ==  3, "ability modifier for 16");
+    DO_TEST(calculate_ability_modifier(17) ==  3, "ability modifier for 17");
+    DO_TEST(calculate_ability_modifier(18) ==  4, "ability modifier for 18");
+    DO_TEST(calculate_ability_modifier(19) ==  4, "ability modifier for 19");
+    DO_TEST(calculate_ability_modifier(20) ==  5, "ability modifier for 20");
 
     END_TEST;
 }
@@ -80,30 +117,37 @@ test damage_test() {
             "remain");
 
     character defender;
-    defender.stats.armor_class = 1;
-    defender.stats.hit_points = 4;
-    defender.life = LIVING;
-
     attack assault;
-    assault.damage = 1;
 
+    defender.stats.hit_points = 4;
     assault.status = HIT;
+    assault.damage = 1;
     apply_attack(&defender, &assault);
     DO_TEST(defender.stats.hit_points == 3, "HP is minus one on HIT");
 
+    defender.stats.hit_points = 7;
     assault.status = CRITICAL;
+    assault.damage = 1;
     apply_attack(&defender, &assault);
-    DO_TEST(defender.stats.hit_points == 1, "damage was double on CRITICAL");
+    DO_TEST(defender.stats.hit_points == 5, "damage was double on CRITICAL");
 
+    defender.stats.hit_points = 1;
     assault.status = MISS;
+    assault.damage = 9999;
     apply_attack(&defender, &assault);
     DO_TEST(defender.stats.hit_points == 1, "zero damage on MISS");
 
+    defender.life = LIVING;
+    defender.stats.hit_points = 1;
     assault.status = HIT;
+    assault.damage = 1;
     apply_attack(&defender, &assault);
     DO_TEST(defender.life == DEAD, "character is dead if HP is 0");
 
+    defender.life = DEAD;
+    defender.stats.hit_points = 0;
     assault.status = CRITICAL;
+    assault.damage = 9999;
     apply_attack(&defender, &assault);
     DO_TEST(defender.stats.hit_points == 0, "still dead after corpse is hit");
 
@@ -114,22 +158,21 @@ test attack_test() {
     DEF_TEST("given an attack, attack hits by meeting or beating defending "
             "character's AC with D20 roll");
 
-    character defender;
-    defender.stats.armor_class = 5;
-    defender.stats.hit_points = 9999;
-
     attack assault;
+    int armor_class = 5;
+    int bonus = 0;
 
-    attack_roll(&assault, 20, &defender);
+    attack_roll(&assault, 20, bonus, armor_class);
     DO_TEST(assault.status == CRITICAL, "CRITICAL when roll is 20");
 
-    attack_roll(&assault, 10, &defender);
+    attack_roll(&assault, 10, bonus, armor_class);
     DO_TEST(assault.status == HIT, "HIT when roll is above AC");
 
-    attack_roll(&assault, 5, &defender);
+    attack_roll(&assault, 5, bonus, armor_class);
     DO_TEST(assault.status == HIT, "HIT when roll equals AC");
 
-    attack_roll(&assault, 1, &defender);
+    armor_class = 25;
+    attack_roll(&assault, 20, bonus, armor_class);
     DO_TEST(assault.status == MISS, "MISS when roll is below AC");
 
     END_TEST;
@@ -151,7 +194,7 @@ test alignment_test() {
     DEF_TEST("given a character, I can get and set the alignment");
     
     character hero;
-    align_character(&hero, GOOD);
+    hero.alignment = GOOD;
 
     DO_TEST(hero.alignment == GOOD, "character alignment is set");
 
@@ -171,6 +214,8 @@ test name_test() {
 }
 
 int main() {
+    RUN_TEST(roll_bonus_application_test);
+    RUN_TEST(level_roll_bonus_test);
     RUN_TEST(name_test);
     RUN_TEST(alignment_test);
     RUN_TEST(new_character_ac_hp_test);
